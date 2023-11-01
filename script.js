@@ -42,25 +42,48 @@ const playerSelection = () => {
 
 const playRound = (playerSelection, computerSelection) => {
     console.log(playerSelection + " " + computerSelection);
+
     if (playerSelection == computerSelection)
         console.log("Tie");
-    else if (playerSelection == "rock" && computerSelection == "paper")
+    else if (playerSelection == "rock" && computerSelection == "paper"){
         console.log("Computer wins");
-    else if(playerSelection == "scissors" && computerSelection == "rock")
+        return 0;
+    }
+    else if(playerSelection == "scissors" && computerSelection == "rock"){
         console.log("Computer wins");
-    else if(playerSelection == "paper" && computerSelection == "scissors")
+        return 0;
+    }
+    else if(playerSelection == "paper" && computerSelection == "scissors"){
         console.log("Computer wins");
-    else
+        return 0;
+    }
+    else{
         console.log("You win");
+        return 1;
+    }
 }
 
 const game = () => {
-    const playerSelection = "rock";
-    const computerSelection = getComputerChoice();
+    let seriesWinner;
+    let [playerWins, computerWins] = [0,0];
+    console.log("Welcome to the classic game of Rock, Paper, Scissors.");    
     
-    console.log("Welcome to the classic game of Rock, Paper, Scissors.");    getComputerChoice();
-    return 0;
+    while(playerWins < 5 || computerWins < 5){
+        let winner = playRound(playerSelection(), computerSelection());
+        if (winner == 0)
+            computerWins++;
+        else if (winner == 1)
+            playerWins++;
+        else
+            continue;
+        console.log(`The score is player: ${playerWins}, computer: ${computerWins}`);
+        console.log("\n");
+
+    }
+
+    seriesWinner = playerWins == 5 ? "You win" : "Computer wins";
+
+    return seriesWinner;
 }
 
-playRound(playerSelection(), computerSelection());
-//game();
+console.log(game());
