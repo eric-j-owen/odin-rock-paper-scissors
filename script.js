@@ -41,10 +41,10 @@ const playerSelection = () => {
 }
 
 const playRound = (playerSelection, computerSelection) => {
-    console.log(playerSelection + " " + computerSelection);
+    console.log(`You selected: ${playerSelection}. Computer selected: ${computerSelection}`);
 
     if (playerSelection == computerSelection)
-        console.log("Tie");
+        console.log("Tie! Go again.");
     else if (playerSelection == "rock" && computerSelection == "paper"){
         console.log("Computer wins");
         return 0;
@@ -66,9 +66,10 @@ const playRound = (playerSelection, computerSelection) => {
 const game = () => {
     let seriesWinner;
     let [playerWins, computerWins] = [0,0];
-    console.log("Welcome to the classic game of Rock, Paper, Scissors.");    
+
+    alert("Welcome to the classic game of Rock, Paper, Scissors. Press OK to play!");    
     
-    while(playerWins < 5 || computerWins < 5){
+    while(playerWins < 5 && computerWins < 5){
         let winner = playRound(playerSelection(), computerSelection());
         if (winner == 0)
             computerWins++;
@@ -81,7 +82,7 @@ const game = () => {
 
     }
 
-    seriesWinner = playerWins == 5 ? "You win" : "Computer wins";
+    seriesWinner = computerWins < 5 ? "You win the series!" : "Computer wins the series";
 
     return seriesWinner;
 }
