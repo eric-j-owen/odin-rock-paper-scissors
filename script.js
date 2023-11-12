@@ -1,90 +1,78 @@
 const computerSelection = () => {
-    let computerMove;
-    let choice = randNumberGenerate();
-
-    switch(choice) {
-        case 1:
-            computerMove = "rock";
-            break;
-        case 2:
-            computerMove = "paper";
-            break;
-        case 3:
-            computerMove = "scissors";
-            break;
-        default:
-            console.log("Error: Try again.");
-    }
-
-    return computerMove;
-}
-
-const randNumberGenerate = () => {
-    const min = Math.ceil(1);
-    const max = Math.ceil(4);
-    const randInt = Math.floor(Math.random()*(max - min) + min);
-    return randInt;
+    const choices = ["rock", "paper", "scissors"];
+    const randomIndex = Math.floor(Math.random() * choices.length);
+    return choices[randomIndex];
 }
 
 const playerSelection = () => {
-    let userChoice;
-    while(true){
-        userChoice = String(prompt("Your move: ").toLocaleLowerCase().trim());
-        if (userChoice == "rock" || userChoice == "paper" || userChoice == "scissors")
-            break;
-        else{
-            console.log("Invalid input. Try again.")
-            continue;
-        }
-    }
-    return userChoice;
+    return new Promise((resolve) => {
+        const btns = document.querySelectorAll(".btn");
+        btns.forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                resolve(e.target.name);
+            })
+        })
+    });
 }
 
-const playRound = (playerSelection, computerSelection) => {
-    console.log(`You selected: ${playerSelection}. Computer selected: ${computerSelection}`);
+const playRound = async () => {
+    const userChoice = await playerSelection();
+    const computerChoice = computerSelection();
+    const resultsDisplay = document.querySelector(".results");
 
-    if (playerSelection == computerSelection)
+    resultsDisplay.textContent = `You selected: ${userChoice}. Computer selected: ${computerChoice}`;
+
+    if (userChoice === computerChoice) {
         console.log("Tie! Go again.");
-    else if (playerSelection == "rock" && computerSelection == "paper"){
-        console.log("Computer wins");
+        return null;
+    } else if (
+        (userChoice === "rock" && computerChoice === "paper") ||
+        (userChoice === "scissors" && computerChoice === "rock") ||
+        (userChoice === "paper" && computerChoice === "scissors")
+    ) {
+        console.log("Computer wins this round.");
         return 0;
-    }
-    else if(playerSelection == "scissors" && computerSelection == "rock"){
-        console.log("Computer wins");
-        return 0;
-    }
-    else if(playerSelection == "paper" && computerSelection == "scissors"){
-        console.log("Computer wins");
-        return 0;
-    }
-    else{
-        console.log("You win");
+    } else {
+        console.log("You win this round!");
         return 1;
     }
 }
 
-const game = () => {
+const game = async () => {
+    const scoreDisplay = document.querySelector(".score");
+    const resultsDisplay = document.querySelector(".results")
+    const btns = document.querySelectorAll(".btn");
+   
     let seriesWinner;
-    let [playerWins, computerWins] = [0,0];
+    let [playerWins, computerWins] = [0, 0];
 
-    alert("Welcome to the classic game of Rock, Paper, Scissors. Press OK to play!");    
-    
-    while(playerWins < 5 && computerWins < 5){
-        let winner = playRound(playerSelection(), computerSelection());
-        if (winner == 0)
+    while (true) {
+        const winner = await playRound();
+        if (winner === 0) {
             computerWins++;
-        else if (winner == 1)
+        } else if (winner === 1) {
             playerWins++;
-        else
-            continue;
-        console.log(`The score is player: ${playerWins}, computer: ${computerWins}`);
-        console.log("\n");
+        }
+        
+        scoreDisplay.textContent = `The score is player: ${playerWins}, computer: ${computerWins}`;
+
+        if(playerWins == 5 || computerWins == 5){
+            btns.forEach((btn) => btn.disabled = true);
+            seriesWinner = playerWins == 5 ? "You win the series!" : "Computer wins the series";
+            resultsDisplay.textContent = seriesWinner;
+            let playAgain = document.createElement("button");
+            playAgain.textContent = "Play again?";
+            resultsDisplay.append(playAgain);
+            playAgain.addEventListener("click", () => {
+                [playerWins, computerWins] = [0, 0];
+                resultsDisplay.textContent = '';
+                scoreDisplay.textContent = '';
+                btns.forEach((btn) => btn.disabled = false);
+            })
+        }
 
     }
 
-    seriesWinner = computerWins < 5 ? "You win the series!" : "Computer wins the series";
-
-    return seriesWinner;
 }
 
-console.log(game());
+game();
